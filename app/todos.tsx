@@ -1,23 +1,19 @@
 import { router, Stack, useFocusEffect } from "expo-router";
-import React, { useCallback, useState, useEffect, useRef } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   View,
   FlatList,
   StyleSheet,
-  Dimensions,
   Alert,
-  Pressable,
 } from "react-native";
 import { useSQLiteContext } from "expo-sqlite";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { IconButton, Button, Text, Icon } from "react-native-paper";
 import { syncTasks } from "../lib/syncTasks"; // Import Sync Logic
-import { Databases, ID } from "appwrite";
+import { Databases } from "appwrite";
 import { client } from "../lib/appwriteConfig";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const databases = new Databases(client);
-const { width } = Dimensions.get("window");
 
 interface TodoItem {
   id: number;
@@ -30,16 +26,15 @@ interface TodoItem {
 export default function TabHome() {
   const [data, setData] = useState<TodoItem[]>([]);
   const database = useSQLiteContext();
-  const isNavigating = useRef(false); // Persist across renders to prevent duplicate presses
 
   useEffect(() => {
-    createTable(); // Ensure the table exists
+    createTable(); // Ensure the table exists once on mount
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       syncTasks(); // Sync local tasks with Appwrite
-      loadData(); // Load SQLite data
+      loadData();  // Then load the tasks from SQLite
     }, [])
   );
 
@@ -62,13 +57,19 @@ export default function TabHome() {
 
   const loadData = async () => {
     try {
-      const tables = await database.getAllAsync("SELECT name FROM sqlite_master WHERE type='table'");
+      // For debugging: list any tables found in SQLite
+      const tables = await database.getAllAsync(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+      );
       console.warn("Existing tables in SQLite:", tables);
 
-      const result = await database.getAllAsync<TodoItem>("SELECT * FROM tasks");
+      // Fetch all tasks from the local SQLite table
+      const result = await database.getAllAsync<TodoItem>(
+        "SELECT * FROM tasks"
+      );
 
       setData(
-        result.map((item) => ({
+        result.map(item => ({
           id: item.id,
           name: item.name,
           description: item.description,
@@ -91,20 +92,28 @@ export default function TabHome() {
           text: "Complete",
           onPress: async () => {
             try {
-              await database.runAsync("UPDATE incident_alert SET completed = 1 WHERE id = ?", [taskId]);
+              // Mark locally as completed
+              await database.runAsync(
+                "UPDATE tasks SET completed = 1 WHERE id = ?",
+                [taskId]
+              );
 
+              // If it has an Appwrite ID, mark in Appwrite as well
               if (appwriteId) {
                 await databases.updateDocument(
-                  "67c608ad00050388e083",
-                  "tasks",
+                  "67c608ad00050388e083", // <--- your Database ID
+                  "tasks",                // <--- your Collection ID
                   appwriteId,
                   { completed: true }
                 );
               }
 
-              setData((prevData) =>
-                prevData.map((task) =>
-                  task.id === taskId ? { ...task, completed: true } : task
+              // Update the state so the list re-renders
+              setData(prevData =>
+                prevData.map(task =>
+                  task.id === taskId
+                    ? { ...task, completed: true }
+                    : task
                 )
               );
             } catch (error) {
@@ -117,62 +126,53 @@ export default function TabHome() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top", "right", "left"]}>
       <Stack.Screen
         options={{
-          headerRight: () => (
-            <View style={{ paddingRight: 16, zIndex: 10000 }}>
-              <Pressable
-                onPress={() => {
-                  if (isNavigating.current) return;
-                  isNavigating.current = true;
-
-                  console.warn("🚀 Add Task button clicked! Navigating to /addtodo");
-
-                  setTimeout(() => {
-                    router.push("/addtodo");
-                    isNavigating.current = false;
-                  }, 500);
-                }}
-                style={({ pressed }) => [
-                  {
-                    padding: 10,
-                    backgroundColor: pressed ? "#EDEDED" : "transparent",
-                    borderRadius: 50,
-                  },
-                ]}
-              >
-                <MaterialCommunityIcons name="plus-circle" size={28} color="#6B21A8" />
-              </Pressable>
-            </View>
-          ),
-          headerStyle: {
-            backgroundColor: "#ffffff",
-          },
-          headerShadowVisible: false,
           headerTitle: "Task List",
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: "bold",
             color: "#1F2937",
           },
+          headerRight: () => (
+            <IconButton
+              icon="plus-circle"
+              size={28}
+              onPress={() => {
+                console.warn("🚀 Add Task button clicked!");
+                router.push("/addtodo");
+              }}
+            />
+          ),
         }}
       />
 
       {data.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Icon source="account-group" size={50} color="#9CA3AF" />
-          <Text variant="titleMedium" style={styles.emptyText}>No To-Dos found</Text>
-          <Text variant="bodyMedium" style={styles.emptySubText}>Add a new task to get started</Text>
+          <Text variant="titleMedium" style={styles.emptyText}>
+            No To-Dos found
+          </Text>
+          <Text variant="bodyMedium" style={styles.emptySubText}>
+            Add a new task to get started
+          </Text>
         </View>
       ) : (
         <FlatList
           data={data}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.userInfo}>
-                <Text variant="bodyLarge" style={styles.nameText}>{item.name}</Text>
-                <Text variant="bodyMedium" style={styles.detailText}>{item.description}</Text>
+                <Text variant="bodyLarge" style={styles.nameText}>
+                  {item.name}
+                </Text>
+                <Text variant="bodyMedium" style={styles.detailText}>
+                  {item.description}
+                </Text>
               </View>
               <View style={styles.buttonContainer}>
                 {!item.completed && (
@@ -209,9 +209,6 @@ export default function TabHome() {
               </View>
             </View>
           )}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
         />
       )}
     </SafeAreaView>
@@ -219,9 +216,14 @@ export default function TabHome() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F3F4F6" },
-  addButton: { marginRight: 16 },
-  listContainer: { padding: 16, gap: 12 },
+  container: {
+    flex: 1,
+    backgroundColor: "#F3F4F6",
+  },
+  listContainer: {
+    padding: 16,
+    gap: 12,
+  },
   card: {
     backgroundColor: "white",
     borderRadius: 12,
@@ -233,30 +235,41 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
   },
-  nameText: { marginBottom: 4 },
-  detailText: { color: "#6B7280" },
-  buttonContainer: { flexDirection: "row", gap: 8 },
-  editButton: { backgroundColor: "#6886B8FF" },
-  completeButton: { backgroundColor: "#198B5DFF" },
-  disabledButton: { backgroundColor: "#E5E7EB" },
-  disabledButtonText: { color: "#9CA3AF" },
-
-  // **Add the missing styles**
   userInfo: {
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 10,
   },
+  nameText: {
+    marginBottom: 4,
+  },
+  detailText: {
+    color: "#6B7280",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    gap: 8,
+  },
   button: {
     padding: 10,
     borderRadius: 5,
   },
-  buttonText: {
-    fontSize: 16,
-    color: "#FFF",
-    fontWeight: "bold",
+  editButton: {
+    backgroundColor: "#6886B8FF",
   },
-
+  completeButton: {
+    backgroundColor: "#198B5DFF",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 14,
+  },
+  disabledButton: {
+    backgroundColor: "#E5E7EB",
+  },
+  disabledButtonText: {
+    color: "#9CA3AF",
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
