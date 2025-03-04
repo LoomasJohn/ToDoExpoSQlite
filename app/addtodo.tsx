@@ -134,7 +134,7 @@ export default function ItemModal() {
       >
         <View style={styles.formContainer}>
           <TextInput
-            label="Task"
+            label="Title"
             placeholder="Enter Task Name"
             value={name}
             onChangeText={setName}
@@ -150,6 +150,33 @@ export default function ItemModal() {
             onChangeText={setDescription}
             mode="outlined"
             left={<TextInput.Icon icon="star-outline" color="#6B7280" />}
+            style={styles.textInput}
+          />
+          <TextInput
+            label="Severity"
+            placeholder="Enter Task Name"
+            value={name}
+            onChangeText={setName}
+            mode="outlined"
+            left={<TextInput.Icon icon="plus" color="#6B7280" />}
+            style={styles.textInput}
+          />
+          <TextInput
+            label="Status"
+            placeholder="Enter Task Name"
+            value={name}
+            onChangeText={setName}
+            mode="outlined"
+            left={<TextInput.Icon icon="plus" color="#6B7280" />}
+            style={styles.textInput}
+          />
+          <TextInput
+            label="Reported By"
+            placeholder="Enter Task Name"
+            value={name}
+            onChangeText={setName}
+            mode="outlined"
+            left={<TextInput.Icon icon="plus" color="#6B7280" />}
             style={styles.textInput}
           />
         </View>
