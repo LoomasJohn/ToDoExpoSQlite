@@ -91,7 +91,7 @@ export default function TabHome() {
           text: "Complete",
           onPress: async () => {
             try {
-              await database.runAsync("UPDATE tasks SET completed = 1 WHERE id = ?", [taskId]);
+              await database.runAsync("UPDATE incident_alert SET completed = 1 WHERE id = ?", [taskId]);
 
               if (appwriteId) {
                 await databases.updateDocument(

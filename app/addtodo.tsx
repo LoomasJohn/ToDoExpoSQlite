@@ -32,7 +32,7 @@ export default function ItemModal() {
 
   const loadData = async () => {
     const result = await database.getFirstAsync<TodoItem>(
-      "SELECT * FROM tasks WHERE id = ?",
+      "SELECT * FROM incident_alert WHERE id = ?",
       [parseInt(id as string)]
     );
     if (result) {
@@ -49,7 +49,7 @@ export default function ItemModal() {
   
     try {
       await database.runAsync(
-        `INSERT INTO tasks (name, description, completed) VALUES (?, ?, 0)`,
+        `INSERT INTO incident_alert (name, description, completed) VALUES (?, ?, 0)`,
         [name.trim(), description.trim()]
       );
 
@@ -72,7 +72,7 @@ export default function ItemModal() {
 
     try {
       const response = await database.runAsync(
-        `UPDATE tasks SET name = ?, description = ? WHERE id = ?`,
+        `UPDATE incident_alert SET name = ?, description = ? WHERE id = ?`,
         [name.trim(), description.trim(), parseInt(id as string)]
       );
       console.log("Item updated successfully:", response?.changes);
@@ -99,7 +99,7 @@ export default function ItemModal() {
           onPress: async () => {
             try {
               const response = await database.runAsync(
-                `DELETE FROM tasks WHERE id = ?`,
+                `DELETE FROM incident_alert WHERE id = ?`,
                 [parseInt(id as string)]
               );
               console.log("Item deleted successfully:", response?.changes);

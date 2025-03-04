@@ -9,7 +9,7 @@ const createDbIfNeeded = async (db: SQLiteDatabase) => {
   try {
     // Create a table
     const response = await db.execAsync(
-      "CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT, completed BOOLEAN)"
+      "CREATE TABLE IF NOT EXISTS incident_alert (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT, completed BOOLEAN)"
     );
   } catch (error) {
     console.error("Error creating database:", error);
