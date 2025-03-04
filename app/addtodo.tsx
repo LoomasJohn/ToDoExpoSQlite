@@ -143,7 +143,7 @@ export default function ItemModal() {
           {/* Title field */}
           <TextInput
             label="Title"
-            placeholder="Enter Task Name"
+            placeholder="Enter Incident Name"
             value={name}
             onChangeText={setName}
             mode="outlined"
@@ -152,18 +152,48 @@ export default function ItemModal() {
           {/* Description field */}
           <TextInput
             label="Description"
-            placeholder="Enter Task description"
+            placeholder="Enter Incident Description"
             value={description}
             onChangeText={setDescription}
             mode="outlined"
             style={styles.textInput}
           />
-
-          {/*
-            If you have additional columns (incidentType, severity, etc.)
-            you need to add them to your 'tasks' table.
-            For now, we’ll omit extra fields that don’t exist in your schema.
-          */}
+          <TextInput
+            label="Incident Type"
+            placeholder="Enter Incident Type"
+            value={name}
+            onChangeText={setName}
+            mode="outlined"
+            left={<TextInput.Icon icon="plus" color="#6B7280" />}
+            style={styles.textInput}
+          />
+          <TextInput
+            label="Severity"
+            placeholder="Enter Incident Severity"
+            value={name}
+            onChangeText={setName}
+            mode="outlined"
+            left={<TextInput.Icon icon="plus" color="#6B7280" />}
+            style={styles.textInput}
+          />
+          <TextInput
+            label="Status"
+            placeholder="Enter Current Status"
+            value={name}
+            onChangeText={setName}
+            mode="outlined"
+            left={<TextInput.Icon icon="plus" color="#6B7280" />}
+            style={styles.textInput}
+          />
+          <TextInput
+            label="Reported By"
+            placeholder="Enter Who Reported"
+            value={name}
+            onChangeText={setName}
+            mode="outlined"
+            left={<TextInput.Icon icon="plus" color="#6B7280" />}
+            style={styles.textInput}
+          />
         </View>
 
         <View style={styles.buttonContainer}>
