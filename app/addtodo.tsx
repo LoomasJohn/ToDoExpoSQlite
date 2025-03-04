@@ -135,7 +135,7 @@ export default function ItemModal() {
         <View style={styles.formContainer}>
           <TextInput
             label="Title"
-            placeholder="Enter Task Name"
+            placeholder="Enter Incident Name"
             value={name}
             onChangeText={setName}
             mode="outlined"
@@ -144,7 +144,7 @@ export default function ItemModal() {
           />
           <TextInput
             label="Description"
-            placeholder="Enter Task description"
+            placeholder="Enter Incident Description"
             value={description}
             autoCapitalize="none"
             onChangeText={setDescription}
@@ -154,7 +154,7 @@ export default function ItemModal() {
           />
           <TextInput
             label="Incident Type"
-            placeholder="Enter Task Name"
+            placeholder="Enter Incident Type"
             value={name}
             onChangeText={setName}
             mode="outlined"
@@ -163,7 +163,7 @@ export default function ItemModal() {
           />
           <TextInput
             label="Severity"
-            placeholder="Enter Task Name"
+            placeholder="Enter Incident Severity"
             value={name}
             onChangeText={setName}
             mode="outlined"
@@ -172,7 +172,7 @@ export default function ItemModal() {
           />
           <TextInput
             label="Status"
-            placeholder="Enter Task Name"
+            placeholder="Enter Current Status"
             value={name}
             onChangeText={setName}
             mode="outlined"
@@ -181,7 +181,7 @@ export default function ItemModal() {
           />
           <TextInput
             label="Reported By"
-            placeholder="Enter Task Name"
+            placeholder="Enter Who Reported"
             value={name}
             onChangeText={setName}
             mode="outlined"
