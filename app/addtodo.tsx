@@ -118,7 +118,7 @@ export default function ItemModal() {
     <SafeAreaView style={styles.container}>
       <Stack.Screen 
         options={{ 
-          title: editMode ? "Edit Task" : "Add Task",
+          title: editMode ? "Edit Incident Report" : "Add Incident Report",
           headerStyle: { backgroundColor: '#ffffff' },
           headerShadowVisible: false,
           headerTitleStyle: {
@@ -150,6 +150,15 @@ export default function ItemModal() {
             onChangeText={setDescription}
             mode="outlined"
             left={<TextInput.Icon icon="star-outline" color="#6B7280" />}
+            style={styles.textInput}
+          />
+          <TextInput
+            label="Incident Type"
+            placeholder="Enter Task Name"
+            value={name}
+            onChangeText={setName}
+            mode="outlined"
+            left={<TextInput.Icon icon="plus" color="#6B7280" />}
             style={styles.textInput}
           />
           <TextInput
@@ -198,7 +207,7 @@ export default function ItemModal() {
               handleSave();
             }}
           >
-            Save Task
+            Save Incident Report
           </Button>
 
 
