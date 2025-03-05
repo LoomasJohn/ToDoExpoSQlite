@@ -15,7 +15,7 @@ import { client } from "../lib/appwriteConfig";
 
 const databases = new Databases(client);
 
-interface TodoItem {
+interface IncidentItem {
   id: number;
   name: string;
   description: string;
@@ -24,7 +24,7 @@ interface TodoItem {
 }
 
 export default function TabHome() {
-  const [data, setData] = useState<TodoItem[]>([]);
+  const [data, setData] = useState<IncidentItem[]>([]);
   const database = useSQLiteContext();
 
   useEffect(() => {
@@ -33,15 +33,15 @@ export default function TabHome() {
 
   useFocusEffect(
     useCallback(() => {
-      syncTasks(); // Sync local tasks with Appwrite
-      loadData();  // Then load the tasks from SQLite
+      syncTasks(); // Sync local alerts with Appwrite
+      loadData();  // Then load the alerts from SQLite
     }, [])
   );
 
   const createTable = async () => {
     try {
       await database.execAsync(`
-        CREATE TABLE IF NOT EXISTS tasks (
+        CREATE TABLE IF NOT EXISTS alerts (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
           description TEXT NOT NULL,
@@ -49,7 +49,7 @@ export default function TabHome() {
           appwrite_id TEXT UNIQUE
         );
       `);
-      console.warn("✅ SQLite Table 'tasks' is ready.");
+      console.warn("✅ SQLite Table 'alerts' is ready.");
     } catch (error) {
       console.error("Error creating table:", error);
     }
@@ -63,9 +63,9 @@ export default function TabHome() {
       );
       console.warn("Existing tables in SQLite:", tables);
 
-      // Fetch all tasks from the local SQLite table
-      const result = await database.getAllAsync<TodoItem>(
-        "SELECT * FROM tasks"
+      // Fetch all alerts from the local SQLite table
+      const result = await database.getAllAsync<IncidentItem>(
+        "SELECT * FROM alerts"
       );
 
       setData(
@@ -84,8 +84,8 @@ export default function TabHome() {
 
   const handleCompleted = async (taskId: number, appwriteId?: string) => {
     Alert.alert(
-      "Complete Task",
-      "Are you sure you completed this task?",
+      "Complete Alert",
+      "Are you sure you completed this alert?",
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -94,7 +94,7 @@ export default function TabHome() {
             try {
               // Mark locally as completed
               await database.runAsync(
-                "UPDATE tasks SET completed = 1 WHERE id = ?",
+                "UPDATE alerts SET completed = 1 WHERE id = ?",
                 [taskId]
               );
 
@@ -117,7 +117,7 @@ export default function TabHome() {
                 )
               );
             } catch (error) {
-              console.error("Error marking task complete:", error);
+              console.error("Error marking alert complete:", error);
             }
           },
         },
@@ -129,7 +129,7 @@ export default function TabHome() {
     <SafeAreaView style={styles.container} edges={["top", "right", "left"]}>
       <Stack.Screen
         options={{
-          headerTitle: "Task List",
+          headerTitle: "Alert List",
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: "bold",
@@ -140,8 +140,8 @@ export default function TabHome() {
               icon="plus-circle"
               size={28}
               onPress={() => {
-                console.warn("🚀 Add Task button clicked!");
-                router.push("/addtodo");
+                console.warn("🚀 Add Alert button clicked!");
+                router.push("/addincident");
               }}
             />
           ),
@@ -155,7 +155,7 @@ export default function TabHome() {
             No To-Dos found
           </Text>
           <Text variant="bodyMedium" style={styles.emptySubText}>
-            Add a new task to get started
+            Add a new alert to get started
           </Text>
         </View>
       ) : (
@@ -179,7 +179,7 @@ export default function TabHome() {
                   <Button
                     mode="contained"
                     icon="pencil"
-                    onPress={() => router.push(`/addtodo?id=${item.id}`)}
+                    onPress={() => router.push(`/addincident?id=${item.id}`)}
                     style={[styles.button, styles.editButton]}
                     labelStyle={styles.buttonText}
                     uppercase={false}

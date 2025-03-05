@@ -26,7 +26,7 @@ export default function RootLayout() {
           <Stack.Screen name="(app)" options={{ title:'',headerShown: false }} />
           <Stack.Screen name="+not-found" />
           <Stack.Screen
-            name="addtodo"
+            name="addincident"
             options={{
               presentation: "modal",
             }}

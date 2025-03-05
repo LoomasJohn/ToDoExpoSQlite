@@ -13,14 +13,14 @@ export async function syncTasks() {
     const user = await account.get();
     const userId = user.$id;
 
-    // Get local tasks missing an Appwrite ID
+    // Get local alerts missing an Appwrite ID
     const localTasks = await database.getAllAsync<{
       id: number;
       name: string;
       description: string;
       completed: boolean;
       appwrite_id?: string;
-    }>("SELECT * FROM tasks WHERE appwrite_id IS NULL");
+    }>("SELECT * FROM alerts WHERE appwrite_id IS NULL");
 
     for (const task of localTasks) {
       // Create document in Appwrite
@@ -38,12 +38,12 @@ export async function syncTasks() {
 
       // Update local row with the new document ID
       await database.runAsync(
-        "UPDATE tasks SET appwrite_id = ? WHERE id = ?",
+        "UPDATE alerts SET appwrite_id = ? WHERE id = ?",
         [response.$id, task.id]
       );
     }
 
-    console.log("✅ Sync complete. Newly created tasks have Appwrite IDs.");
+    console.log("✅ Sync complete. Newly created alerts have Appwrite IDs.");
   } catch (error) {
     console.error("❌ Sync failed:", error);
   }

@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { TextInput, Button } from "react-native-paper";
 import { syncTasks } from "../lib/syncTasks"; // Import your sync function
 
-interface TodoItem {
+interface IncidentItem {
   id: number;
   name: string;
   description: string;
@@ -33,8 +33,8 @@ export default function ItemModal() {
   // Load existing data if we're in "edit" mode
   const loadData = async () => {
     try {
-      const result = await database.getFirstAsync<TodoItem>(
-        "SELECT * FROM tasks WHERE id = ?",
+      const result = await database.getFirstAsync<IncidentItem>(
+        "SELECT * FROM alerts WHERE id = ?",
         [parseInt(id as string, 10)]
       );
       if (result) {
@@ -43,7 +43,7 @@ export default function ItemModal() {
       }
     } catch (error) {
       console.error("Error loading item:", error);
-      Alert.alert("Error", "Failed to load the Task");
+      Alert.alert("Error", "Failed to load the Alert");
     }
   };
 
@@ -60,18 +60,18 @@ export default function ItemModal() {
         [name.trim(), description.trim()]
       );
 
-      console.log("✅ Task added to SQLite. Syncing with Appwrite...");
-      await syncTasks(); // Sync newly added task to Appwrite
+      console.log("✅ Alert added to SQLite. Syncing with Appwrite...");
+      await syncTasks(); // Sync newly added alert to Appwrite
 
-      // Once saved, navigate back to the todos list
-      router.push("/todos");
+      // Once saved, navigate back to the alert list
+      router.push("/incident");
     } catch (error) {
       console.error("❌ Error saving item:", error);
-      Alert.alert("Error", "Failed to save Task");
+      Alert.alert("Error", "Failed to save Alert");
     }
   };
 
-  // Update an existing record in `tasks`
+  // Update an existing record in `alerts`
   const handleUpdate = async () => {
     if (!name.trim() || !description.trim()) {
       Alert.alert("Error", "Please fill in all fields");
@@ -80,7 +80,7 @@ export default function ItemModal() {
 
     try {
       await database.runAsync(
-        "UPDATE tasks SET name = ?, description = ? WHERE id = ?",
+        "UPDATE alerts SET name = ?, description = ? WHERE id = ?",
         [name.trim(), description.trim(), parseInt(id as string, 10)]
       );
 
@@ -88,15 +88,15 @@ export default function ItemModal() {
       router.back(); // Go back instead of push
     } catch (error) {
       console.error("Error updating item:", error);
-      Alert.alert("Error", "Failed to update Task");
+      Alert.alert("Error", "Failed to update Alerts");
     }
   };
 
-  // Delete a record from `tasks`
+  // Delete a record from `alerts`
   const handleDelete = async () => {
     Alert.alert(
-      "Delete Task",
-      "Are you sure you want to delete this task?",
+      "Delete Alert",
+      "Are you sure you want to delete this alert?",
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -105,7 +105,7 @@ export default function ItemModal() {
           onPress: async () => {
             try {
               await database.runAsync(
-                "DELETE FROM tasks WHERE id = ?",
+                "DELETE FROM alerts WHERE id = ?",
                 [parseInt(id as string, 10)]
               );
 
@@ -113,7 +113,7 @@ export default function ItemModal() {
               router.back();
             } catch (error) {
               console.error("Error deleting item:", error);
-              Alert.alert("Error", "Failed to delete task");
+              Alert.alert("Error", "Failed to delete alert");
             }
           },
         },
@@ -125,7 +125,7 @@ export default function ItemModal() {
     <SafeAreaView style={styles.container}>
       <Stack.Screen
         options={{
-          title: editMode ? "Edit Task" : "Add Task",
+          title: editMode ? "Edit Alert" : "Add Alert",
           headerStyle: { backgroundColor: "#ffffff" },
           headerShadowVisible: false,
           headerTitleStyle: {
@@ -214,7 +214,7 @@ export default function ItemModal() {
               onPress={handleUpdate}
               style={[styles.button, styles.saveButton]}
             >
-              Update Task
+              Update Alert
             </Button>
           ) : (
             <Button
@@ -222,7 +222,7 @@ export default function ItemModal() {
               onPress={handleSave}
               style={[styles.button, styles.saveButton]}
             >
-              Save Task
+              Save Alert
             </Button>
           )}
 

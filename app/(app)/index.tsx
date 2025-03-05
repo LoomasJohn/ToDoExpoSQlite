@@ -22,9 +22,9 @@ export default function Index() {
         {session && ( <View style={styles.container}>
            <TextCustom fontSize={22}>Hello {user.name}!</TextCustom>
             <View style={styles.container}>
-              <Text style={styles.text}> This app will help you organize and manage your tasks and responsibilities. It allows you to create, edit, and delete tasks, set deadlines, and prioritize items effectively.</Text>
-       {/*You can include the todo functionalies inside the index.tsx or you can create a separe screen and access via a link as below*/}
-      <Link href="../todos" style={styles.button}>
+              <Text style={styles.text}> This app will help you stay up to date on current cyber incidents. It allows you to create, edit, and delete alerts, set status updates, and prioritize incident severity.</Text>
+       {/*You can include the incident functionalies inside the index.tsx or you can create a separe screen and access via a link as below*/}
+      <Link href="../incident" style={styles.button}>
       <Text style={styles.buttonText}>Access your To-Dos</Text>
     </Link>
      </View>
